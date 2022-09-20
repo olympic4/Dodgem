@@ -73,6 +73,7 @@ class Player:
         else:
             Player.image = Player.images[0]
 
+        Player.image = pygame.transform.scale2x(Player.image)
         rect = Player.image.get_rect()
         screen.blit(Player.image,
                     (width / 2 - rect.width / 2, height - 20 - rect.height))
