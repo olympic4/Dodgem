@@ -4,7 +4,7 @@ from pygame.locals import QUIT
 pygame.init()
 
 size = width, height = 960, 672  #window size
-screen = pygame.Surface((320,224))
+screen = pygame.Surface((320, 224))
 display = pygame.display.set_mode(size)
 pygame.display.set_caption("Dodgem")  #window title
 
@@ -37,9 +37,11 @@ class Player:
     braking = False
     drivingLeft = False
     drivingRight = False
-    images = [pygame.image.load("Assets/player_straight.png").convert_alpha(),
-             pygame.image.load("Assets/player_left.png").convert_alpha(),
-             pygame.image.load("Assets/player_right.png").convert_alpha()]
+    images = [
+        pygame.image.load("Assets/player_straight.png").convert_alpha(),
+        pygame.image.load("Assets/player_left.png").convert_alpha(),
+        pygame.image.load("Assets/player_right.png").convert_alpha()
+    ]
     image = images[0]
 
     def update():
@@ -57,18 +59,23 @@ class Player:
         else:
             Player.speed = Player.speed + (Player.decel * Game.dt)
 
-        if (Player.X < -1 or Player.X > 1) and Player.speed > Player.offRoadLimit:
-            Player.speed = Player.speed + (Player.offRoadDecel * Game.dt)  #slower when offroad
-        Player.X = -1.5 if Player.X < -1.5 else 1.5 if Player.X > 1.5 else Player.X #player can't go too far offroad
-        Player.speed = 0 if Player.speed < 0 else Player.maxSpeed if Player.speed > Player.maxSpeed else Player.speed #speed limited to maxSpeed
-        
+        if (Player.X < -1
+                or Player.X > 1) and Player.speed > Player.offRoadLimit:
+            Player.speed = Player.speed + (Player.offRoadDecel * Game.dt
+                                           )  #slower when offroad
+        Player.X = -1.5 if Player.X < -1.5 else 1.5 if Player.X > 1.5 else Player.X  #player can't go too far offroad
+        Player.speed = 0 if Player.speed < 0 else Player.maxSpeed if Player.speed > Player.maxSpeed else Player.speed  #speed limited to maxSpeed
+
         if Player.drivingLeft == True:
             Player.image = Player.images[1]
         elif Player.drivingRight == True:
             Player.image = Player.images[2]
         else:
             Player.image = Player.images[0]
-        pygame.draw.rect(screen,(255,255,255),rect)
+
+        rect = Player.image.get_rect()
+        screen.blit(Player.image,
+                    (width / 2 - rect.width / 2, height - 20 - rect.height))
 
 
 class Background:
@@ -90,7 +97,7 @@ class Camera:
 
 class Road:
 
-    width = width*1.6
+    width = width * 1.6
     groundColors = [(23, 138, 0), (31, 176, 2)]
     roadColors = [(140, 140, 140), (120, 120, 120)]
     curbColors = [(255, 255, 255), (224, 16, 16)]
@@ -111,7 +118,7 @@ class Road:
             scale = (1 / Z)
             w = Road.width * scale
             colorIndex = 0
-            if (Z+Road.textureOffset)%2 > 1:
+            if (Z + Road.textureOffset) % 2 > 1:
                 colorIndex += 1
             Road.Zmap.append({
                 "Z": Z,
@@ -120,12 +127,12 @@ class Road:
                 "colorIndex": colorIndex,
                 "screen_y": height - i
             })
-        
+
         for l in Road.Zmap:
-            Xoffset = -1*(Player.X * l["w"])/2
+            Xoffset = -1 * (Player.X * l["w"]) / 2
             cw = Road.curbWidth * l["scale"]
-            middle = width/2 + Xoffset
-            halfRoadW = l["w"]/2
+            middle = width / 2 + Xoffset
+            halfRoadW = l["w"] / 2
             pygame.draw.line(screen, Road.groundColors[l["colorIndex"]],
                              (0, l["screen_y"]),
                              (width, l["screen_y"]))  #grass
@@ -135,10 +142,9 @@ class Road:
             pygame.draw.line(screen, Road.curbColors[l["colorIndex"]],
                              (middle - halfRoadW - cw, l["screen_y"]),
                              (middle - halfRoadW, l["screen_y"]))  #curbR
-            pygame.draw.line(
-                screen, Road.curbColors[l["colorIndex"]],
-                (middle + halfRoadW, l["screen_y"]),
-                (middle + halfRoadW + cw, l["screen_y"]))  #curbL
+            pygame.draw.line(screen, Road.curbColors[l["colorIndex"]],
+                             (middle + halfRoadW, l["screen_y"]),
+                             (middle + halfRoadW + cw, l["screen_y"]))  #curbL
 
             if l["colorIndex"] == 1:
                 for i in range(Road.lanes - 1):
@@ -188,8 +194,8 @@ class Game:
         Road.update()
         Player.update()
         #print(Player.speed,Player.X,Camera.Z)
-        screen = pygame.transform.scale(screen, (960,672))
-        display.blit(screen,(0,0))
+        screen = pygame.transform.scale(screen, (960, 672))
+        display.blit(screen, (0, 0))
         pygame.display.flip()  #draw to display
 
 
